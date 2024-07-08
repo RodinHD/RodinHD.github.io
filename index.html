@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="High-Fidelity 3D Avatar Generation with Diffusion Models">
+  <meta name="keywords" content="3D Avatar Generation, 3D Diffusion Models, Catastrophic Forgetting">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RodinHD: High-Fidelity 3D Avatar Generation with Diffusion Models</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/github.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script>  
+    window.MathJax = {  
+      tex: {  
+        inlineMath: [['$', '$'], ['\\(', '\\)']]  
+      },  
+      svg: {  
+        fontCache: 'global'  
+      }  
+    };  
+  </script>  
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>      
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title"><nobr>RodinHD: High-Fidelity 3D Avatar Generation with Diffusion Models</nobr></h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="http://home.ustc.edu.cn/~zhangbowen">Bowen Zhang</a><sup>*1</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.linkedin.com/in/yiji-cheng-a8b922213/?originalSubdomain=cn">Yiji Cheng</a><sup>*2</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.chunyuwang.org/">Chunyu Wang</a><sup>†3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://hellozting.github.io/">Ting Zhang</a><sup>3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://jlyang.org/">Jiaolong Yang</a><sup>3</sup>,
+            </span>
+            <br>
+            <span class="author-block">
+              <a href="https://andytang15.github.io/">Yansong Tang</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://en.auto.ustc.edu.cn/2021/0616/c26828a513169/page.htm">Feng Zhao</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="http://www.dongchen.pro/">Dong Chen</a><sup>3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.microsoft.com/en-us/research/people/bainguo/">Baining Guo</a><sup>3</sup>.
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>University of Science and Technology of China,</span>
+            <span class="author-block"><sup>2</sup>Tsinghua University,</span>
+            <span class="author-block"><sup>3</sup>Microsoft Research Asia</span>
+            <span class="author-block"><sup>*</sup>Interns at Microsoft Research Asia. Equal contribution.<sup>†</sup>Corresponding author.</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="http://arxiv.org/abs/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+
+              <span class="link-block">
+                <a href="https://github.com/RodinHD/RodinHD"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (Comming Soon)</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-steve">
+          <video poster="" id="steve" autoplay controls muted loop playsinline height="80%" width="80%">
+            <source src="./static/videos/916f_blackbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-shiba">
+          <video poster="" id="shiba" autoplay controls muted loop playsinline height="80%" width="80%">
+            <source src="./static/videos/918f_blackbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="80%" width="80%">
+            <source src="./static/videos/bd39_blackbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="80%" width="80%">
+            <source src="./static/videos/1bb8_blackbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="80%" width="80%">
+            <source src="./static/videos/Abraham_Alloway_Z1BER_blackbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="80%" width="80%">
+            <source src="./static/videos/Alejandra_Gilmore_F1P20_blackbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="80%" width="80%">
+            <source src="./static/videos/Aleta_Willey_EQKOM_blackbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="80%" width="80%">
+            <source src="./static/videos/Alexis_Shakin_3JL42_blackbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We present RodinHD, which addresses the task of generating high-fidelity 3D avatars from a frontal view portrait image. Existing methods struggle to capture intricate details such as cloth textures and hairstyles which we tackle in this paper. Specifically, we first identify an overlooked problem of catastrophic forgetting that arises when fitting triplanes sequentially on a large number of avatars, caused by the MLP decoder sharing scheme. To overcome this issue, we introduce a novel data scheduling strategy called task replay and a weight consolidation regularization term, which effectively improves the decoder's capability of rendering sharper details and unleashes the full power of triplanes for high-fidelity generation. Additionally, we maximize the guiding effect of the conditional portrait image by computing a finer-grained hierarchical representation that captures rich 2D texture cues, and injecting them to the 3D diffusion model at multiple layers via cross-attention. When trained on $46K$ avatars with a noise schedule optimized for triplanes, the resulting model is capable of generating 3D avatars with notably better details than previous methods and can generalize to in-the-wild portrait input.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">Conditional Avatar Generation from Synthetic Portrait</h2>
+        <p></p>
+      </div>
+  
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <div class="columns is-centered has-text-centered">
+            <div class="column content">
+              <video id="matting-video" autoplay="" controls="" muted="" loop="" playsinline="" width="100%" height="100%">
+                <source src="./static/videos/RodinHD_imgcond.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- </div> -->
+
+      <br>
+      <div class="container is-max-desktop">
+  
+        <div class="columns is-centered has-text-centered">
+          <h2 class="title is-3">Avatar Creation from In-the-wild Portrait</h2>
+          <p></p>
+        </div>
+    
+        <div class="columns is-centered has-text-centered">
+          <div class="column">
+            <div class="columns is-centered has-text-centered">
+              <div class="column content">
+                <video id="matting-video" autoplay="" controls="" muted="" loop="" playsinline="" width="100%" height="100%">
+                  <source src="./static/videos/RodinHD_realworld.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <h2 class="title is-3">Text-conditioned Avatar Creation</h2>
+          <p></p>
+        </div>
+
+      <br>
+  
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <div class="columns is-centered has-text-centered">
+            <div class="column content">
+              <video id="matting-video" autoplay="" controls="" muted="" loop="" playsinline="" width="100%" height="100%">
+                <source src="./static/videos/RodinHD_textcond.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <h2 class="title is-3">Unconditional Avatar Generation</h2>
+        </div>
+
+      <br>
+  
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <div class="columns is-centered has-text-centered">
+            <div class="column content">
+              <video id="matting-video" autoplay="" controls="" muted="" loop="" playsinline="" width="100%" height="100%">
+                <source src="./static/videos/RodinHD_uncond.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <h2 class="title is-3">Visual Comparison of 3D Consistency with Rodin</h2>
+        </div>
+
+      <br>
+  
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <div class="columns is-centered has-text-centered">
+            <div class="column content">
+              <video id="matting-video" autoplay="" controls="" muted="" loop="" playsinline="" width="100%" height="100%">
+                <source src="./static/videos/RodinHD_3dconsistency.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content has-text-justified">
+        <p>
+          Note: The 3D digital avatars generated by our model are for research purposes only.
+        </p>
+      </div>
+
+      
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Method</h2>
+          <div>
+            <img src="static/images/pipeline.png" class="center">
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              Our framework comprises two stages of triplane fitting and generation, respectively. In the fitting stage, it learns a high-resolution triplane for each avatar and a shared decoder for rendering images. In the generation stage, it learns a base diffusion model and an upsample diffusion model cascaded to generate high-resolution triplanes. The conditional portrait images are injected into the diffusion models in a hierarchical style to enhance the intricate details in the generated triplanes.
+            </p>
+          </div>
+          
+        </div>
+      </div>
+  
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h3 class="title is-4">Catastrophic Forgetting</h3>
+          <div>
+            <img src="static/images/catastrophic_forgetting.png" class="center" height="80%" width="80%">
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              As training proceeds, the decoder gradually forgets the knowledge learned on the previous avatars of 1&4 and is overly adapted to avatar 9. As a result, the decoder lacks ability to generate fine details for novel triplanes. Therefore, we propose a novel data scheduling strategy called task replay, and a weight consolidation regularization term that effectively preserves the decoder's capability of rendering sharp details.
+            </p>
+          </div>
+          
+        </div>
+      </div>
+  
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h3 class="title is-4">High-resolution Triplane Diffusion</h3>
+          <div>
+            <img src="static/images/noise_visualization.png" class="center" height="80%" width="80%">
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              Destruction comparison. Rendered images from triplanes with 8 and 32 channels, respectively. The triplanes are destructed with the same noise level (logSNR(t) = 0.57). The 32-channel triplane has larger redundancy so it is less destructed even with the same noise level. Considering the larger redundancy in triplanes, we propose to apply a stronger noise to fully destruct triplanes to prevent the model from under-training.
+            </p>
+          </div>
+          <div>
+            <img src="static/images/noise_schedule.png" class="center" height="80%" width="80%">
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              Visualization of optimized noise schedule. LogSNR comparison between the default setting and our optimized noise schedules for the base (left) and upsample (right) networks.
+            </p>
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              Despite this, it is difficult to hallucinate detailed 3D avatars from scratch. So, we propose to supply ample details from the portrait image to alleviate the difficulty. We compute a multi-scale feature representation using a pre-trained Variational Autoencoder. Since the VAE is trained to accurately reconstruct the input images, the low-level visual details are well preserved in the latent features. 
+            </p>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Demo Video</h2>
+          <div class="publication-video">
+            <iframe src="https://www.youtube.com/embed/ULvHt7dZx-Q?si=yI1k7__AA0oiqYXq"
+                    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          </div>
+          
+        </div>
+      </div>
+
+  </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code></code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            The website code is borrowed from the <a
+            href="https://github.com/nerfies/nerfies.github.io">source code</a> of Nerfies. We thank the authors for sharing the templates.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
